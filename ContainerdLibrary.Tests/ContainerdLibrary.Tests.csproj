@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
+    <PackageReference Include="MSTest.TestAdapter" Version="2.2.8" />
+    <PackageReference Include="MSTest.TestFramework" Version="2.2.8" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ContainerdLibrary\ContainerdLibrary.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="TestData\io.containerd.content.v1.content\blobs\sha256\017727efcfeb7d053af68e51436ce8e65edbc6ca573720afb4f79c8594036955">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\io.containerd.content.v1.content\blobs\sha256\bea1513c492de5b5e94bf8949d2cc55b3eaa9775467c0f243f8f8e68a6496e71">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\io.containerd.metadata.v1.bolt\meta.db">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\io.containerd.content.v1.content\blobs\sha256\7d257bb9ceb6e3f6b16e1c37b01459b5964a1b3a715a7065507178c17b7e3d38">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\io.containerd.snapshotter.v1.overlayfs\metadata.db">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>
