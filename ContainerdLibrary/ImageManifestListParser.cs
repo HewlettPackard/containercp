@@ -17,7 +17,7 @@ namespace ContainerdLibrary
             JToken mediaTypeObject = manifest.GetValue(MediaTypePropertyName);
             string mediaType = mediaTypeObject.Value<string>();
             DockerMediaType dockerMediaType = DockerMediaTypeParser.ParseManifestMediaType(mediaType);
-            return dockerMediaType == DockerMediaType.ManifestListV2Json;
+            return DockerMediaTypeHelper.IsManifestList(dockerMediaType);
         }
     }
 }
