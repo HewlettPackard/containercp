@@ -29,6 +29,21 @@ namespace ContainerdLibrary.Tests
 
         [TestMethod]
         [DeploymentItem(@"TestData\io.containerd.content.v1.content\blobs\sha256\017727efcfeb7d053af68e51436ce8e65edbc6ca573720afb4f79c8594036955", @"TestData\io.containerd.content.v1.content\blobs\sha256\017727efcfeb7d053af68e51436ce8e65edbc6ca573720afb4f79c8594036955")]
+        public void Test_GetImageManifestReferences()
+        {
+            // Arrange
+            string manifestListPath = @"TestData\io.containerd.content.v1.content\blobs\sha256\017727efcfeb7d053af68e51436ce8e65edbc6ca573720afb4f79c8594036955";
+            string manifestList = File.ReadAllText(manifestListPath);
+
+            // Act
+            BlobReference blobReference = ImageManifestListParser.GetImageManifestReference(manifestList, new DockerPlatform("amd64", "linux"));
+
+            // Assert
+            Assert.AreEqual("12fa9b2b130df04d58cc01e117b4ac91d6657e0ca0a6c71bd7da8f4f475b925a", blobReference.Hash);
+        }
+
+        [TestMethod]
+        [DeploymentItem(@"TestData\io.containerd.content.v1.content\blobs\sha256\017727efcfeb7d053af68e51436ce8e65edbc6ca573720afb4f79c8594036955", @"TestData\io.containerd.content.v1.content\blobs\sha256\017727efcfeb7d053af68e51436ce8e65edbc6ca573720afb4f79c8594036955")]
         public void Test_IsManifestList()
         {
             // Arrange

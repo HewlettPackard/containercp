@@ -4,7 +4,9 @@
  * the GNU Lesser Public License version 2.1
  */
 using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace ContainerdLibrary
 {
@@ -42,6 +44,30 @@ namespace ContainerdLibrary
             }
 
             return result;
+        }
+
+        public static BlobReference GetImageManifestReference(string manifestListJson, DockerPlatform platform)
+        {
+            List<KeyValuePair<BlobReference, DockerPlatform>> manifests = GetImageManifests(manifestListJson);
+            if (manifests.Count == 0)
+            {
+                throw new InvalidDataException("Manifest list is empty");
+            }
+
+            if (manifests.Count == 1)
+            {
+                return manifests[0].Key;
+            }
+
+            foreach (KeyValuePair<BlobReference, DockerPlatform> manifest in manifests)
+            {
+                if (manifest.Value.Architecture == platform.Architecture && manifest.Value.OS == platform.OS)
+                {
+                    return manifest.Key;
+                }
+            }
+
+            throw new Exception($"Image does not support architecture {platform.Architecture} and os {platform.OS}");
         }
 
         internal static bool IsManifestList(string manifestJson)
