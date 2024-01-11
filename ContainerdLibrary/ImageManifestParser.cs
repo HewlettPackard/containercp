@@ -17,7 +17,7 @@ namespace ContainerdLibrary
         /// <returns>List of blob references of layers from lowest to highest</returns>
         public static List<BlobReference> GetImageLayers(string manifestJson)
         {
-            if (IsManifestList(manifestJson))
+            if (ImageManifestListParser.IsManifestList(manifestJson))
             {
                 throw new NotSupportedException("Manifest list is not supported");
             }
@@ -39,15 +39,6 @@ namespace ContainerdLibrary
             }
 
             return result;
-        }
-
-        internal static bool IsManifestList(string manifestJson)
-        {
-            JObject manifest = JObject.Parse(manifestJson);
-            JToken mediaTypeObject = manifest.GetValue(MediaTypePropertyName);
-            string mediaType = mediaTypeObject.Value<string>();
-            DockerMediaType dockerMediaType = DockerMediaTypeParser.ParseManifestMediaType(mediaType);
-            return dockerMediaType == DockerMediaType.ManifestListV2Json;
         }
     }
 }

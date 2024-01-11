@@ -26,20 +26,5 @@ namespace ContainerdLibrary.Tests
             // Assert
             Assert.AreEqual(19, layers.Count);
         }
-
-        [TestMethod]
-        [DeploymentItem(@"TestData\io.containerd.content.v1.content\blobs\sha256\017727efcfeb7d053af68e51436ce8e65edbc6ca573720afb4f79c8594036955", @"TestData\io.containerd.content.v1.content\blobs\sha256\017727efcfeb7d053af68e51436ce8e65edbc6ca573720afb4f79c8594036955")]
-        public void Test_IsManifestList()
-        {
-            // Arrange
-            string manifestPath = @"TestData\io.containerd.content.v1.content\blobs\sha256\017727efcfeb7d053af68e51436ce8e65edbc6ca573720afb4f79c8594036955";
-            string manifest = File.ReadAllText(manifestPath);
-
-            // Act
-            bool isManifestList = ImageManifestParser.IsManifestList(manifest);
-
-            // Assert
-            Assert.AreEqual(true, isManifestList);
-        }
     }
 }
