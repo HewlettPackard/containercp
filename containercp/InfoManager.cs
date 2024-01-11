@@ -9,7 +9,7 @@ using System.Collections.Generic;
 
 namespace containercp
 {
-    public class InfoManager
+    public static class InfoManager
     {
         public static void ShowInfo(string containerName)
         {
