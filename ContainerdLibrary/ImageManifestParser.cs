@@ -17,10 +17,6 @@ namespace ContainerdLibrary
         /// <returns>List of blob references of layers from lowest to highest</returns>
         public static List<BlobReference> GetImageLayers(string manifestJson)
         {
-            if (ImageManifestListParser.IsManifestList(manifestJson))
-            {
-                throw new NotSupportedException("Manifest list is not supported");
-            }
             List<BlobReference> result = new List<BlobReference>();
             JObject manifest = JObject.Parse(manifestJson);
             JArray layers = manifest.GetValue(LayersPropertyName) as JArray;

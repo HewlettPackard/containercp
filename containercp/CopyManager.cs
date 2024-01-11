@@ -64,7 +64,7 @@ namespace containercp
             }
 
             ContainerDetails sourceContainerDetails = sourceContainerDetailsList[0];
-            List<BlobReference> imageLayers = containerdDatastore.GetImageLayers(sourceContainerDetails.ImageIdentifier);
+            List<BlobReference> imageLayers = containerdDatastore.GetImageLayers(sourceContainerDetails.ImageIdentifier, PlatformHelper.CurrentPlatform);
             int layerIndex = containerdDatastore.FindImageLayerIndexContainingFile(imageLayers, pathInSourceContainer);
 
             if (layerIndex == -1)
@@ -102,11 +102,11 @@ namespace containercp
 
             ContainerDetails destinationContainerDetails = destinationContainerDetailsList[0];
 
-            List<BlobReference> imageLayers = containerdDatastore.GetImageLayers(destinationContainerDetails.ImageIdentifier);
+            List<BlobReference> imageLayers = containerdDatastore.GetImageLayers(destinationContainerDetails.ImageIdentifier, PlatformHelper.CurrentPlatform);
             int layerIndex = containerdDatastore.FindImageLayerIndexContainingFile(imageLayers, pathInDestinationContainer);
             if (layerIndex >= 0)
             {
-                List<string> imagesUsingLayer = containerdDatastore.GetNamedImagesUsingLayer(imageLayers[layerIndex]);
+                List<string> imagesUsingLayer = containerdDatastore.GetNamedImagesUsingLayer(imageLayers[layerIndex], PlatformHelper.CurrentPlatform);
                 if (imagesUsingLayer.Count > 1)
                 {
                     Console.WriteLine($"The file is located on layer {layerIndex} which is used by the following images:");
@@ -117,7 +117,7 @@ namespace containercp
                 }
             }
 
-            layerIndex = containerdDatastore.FindImageLayerIndexForStoringFile(imageLayers, pathInDestinationContainer);
+            layerIndex = containerdDatastore.FindImageLayerIndexForStoringFile(imageLayers, pathInDestinationContainer, PlatformHelper.CurrentPlatform);
             if (layerIndex == -1)
             {
                 Console.WriteLine($"Error: Was not able to find suitable layer for {pathInDestinationContainer} in {destinationContainerName} container image");

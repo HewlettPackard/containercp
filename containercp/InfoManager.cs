@@ -58,7 +58,7 @@ namespace containercp
                 }
                 BlobReference manifestReference = datastoreHelper.GetImageManifestReference(containerDetails.ImageIdentifier);
                 Console.WriteLine($"Image manifest reference: {manifestReference.Hash}");
-                List<BlobReference> layerReferences = datastoreHelper.GetImageLayers(containerDetails.ImageIdentifier);
+                List<BlobReference> layerReferences = datastoreHelper.GetImageLayers(containerDetails.ImageIdentifier, PlatformHelper.CurrentPlatform);
                 List<string> layerSnapshotNames = datastoreHelper.GetLayersSnapshotNames(snapshotKey);
                 for (int index = 0; index < layerReferences.Count; index++)
                 {
@@ -68,7 +68,7 @@ namespace containercp
                     ulong? snapshotID = datastoreHelper.GetSnapshotID(snapshotName);
                     Console.WriteLine($"  Snapshot ID: {snapshotID}");
                     Console.WriteLine($"  Snapshot Name: {snapshotName}");
-                    List<ContainerDetails> containersUsingLayer = datastoreHelper.GetContainersUsingLayer(layerReference);
+                    List<ContainerDetails> containersUsingLayer = datastoreHelper.GetContainersUsingLayer(layerReference, PlatformHelper.CurrentPlatform);
                     foreach (ContainerDetails containerUsingLayer in containersUsingLayer)
                     {
                         if (containerUsingLayer.ContainerName == containerName)

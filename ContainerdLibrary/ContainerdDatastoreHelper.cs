@@ -51,20 +51,28 @@ namespace ContainerdLibrary
             return m_databaseHelper.GetImageManifestReference(imageIdentifier);
         }
 
-        public string GetImageManifest(string imageIdentifier)
+        public string GetImageManifest(string imageIdentifier, DockerPlatform platform)
         {
             BlobReference blobReference = m_databaseHelper.GetImageManifestReference(imageIdentifier);
             if (blobReference == null)
             {
                 throw new ArgumentException($"Cannot find image manifest for {imageIdentifier}");
             }
+
             string manifestPath = GetBlobPath(blobReference);
-            return File.ReadAllText(manifestPath);
+            string manifestText = File.ReadAllText(manifestPath);
+            if (DockerMediaTypeHelper.IsManifestList(blobReference.DockerMediaType))
+            {
+                blobReference = ImageManifestListParser.GetImageManifestReference(manifestText, platform);
+                manifestPath = GetBlobPath(blobReference);
+                manifestText = File.ReadAllText(manifestPath);
+            }
+            return manifestText;
         }
 
-        public List<BlobReference> GetImageLayers(string imageIdentifier)
+        public List<BlobReference> GetImageLayers(string imageIdentifier, DockerPlatform platform)
         {
-            string imageManifest = GetImageManifest(imageIdentifier);
+            string imageManifest = GetImageManifest(imageIdentifier, platform);
             return ImageManifestParser.GetImageLayers(imageManifest);
         }
 
@@ -101,9 +109,9 @@ namespace ContainerdLibrary
             }
         }
 
-        public List<ContainerDetails> GetContainersUsingLayer(BlobReference reference)
+        public List<ContainerDetails> GetContainersUsingLayer(BlobReference reference, DockerPlatform platform)
         {
-            List<string> images = GetImagesUsingLayer(reference);
+            List<string> images = GetImagesUsingLayer(reference, platform);
             List<ContainerDetails> containers = m_databaseHelper.GetAllContainers();
             List<ContainerDetails> result = new List<ContainerDetails>();
             foreach (ContainerDetails container in containers)
@@ -117,19 +125,14 @@ namespace ContainerdLibrary
             return result;
         }
 
-        public List<string> GetImagesUsingLayer(BlobReference reference)
+        public List<string> GetImagesUsingLayer(BlobReference reference, DockerPlatform platform)
         {
             List<KeyValuePair<string, BlobReference>> images = m_databaseHelper.GetAllImages();
             List<string> result = new List<string>();
             foreach (KeyValuePair<string, BlobReference> image in images)
             {
                 string imageIdentifier = image.Key;
-                string manifest = GetImageManifest(imageIdentifier);
-                if (image.Value.DockerMediaType == DockerMediaType.ManifestListV2Json)
-                {
-                    continue;
-                }
-
+                string manifest = GetImageManifest(imageIdentifier, platform);
                 List<BlobReference> blobReferences = ImageManifestParser.GetImageLayers(manifest);
                 if (blobReferences.Contains(reference))
                 {
@@ -140,9 +143,9 @@ namespace ContainerdLibrary
             return result;
         }
 
-        public List<string> GetNamedImagesUsingLayer(BlobReference reference)
+        public List<string> GetNamedImagesUsingLayer(BlobReference reference, DockerPlatform platform)
         {
-            List<string> images = GetImagesUsingLayer(reference);
+            List<string> images = GetImagesUsingLayer(reference, platform);
             List<string> result = new List<string>();
             foreach(string image in images)
             {
@@ -169,13 +172,13 @@ namespace ContainerdLibrary
             return -1;
         }
 
-        public int FindImageLayerIndexForStoringFile(List<BlobReference> imageLayers, string pathInImage)
+        public int FindImageLayerIndexForStoringFile(List<BlobReference> imageLayers, string pathInImage, DockerPlatform platform)
         {
             int layerContaningFileIndex = FindImageLayerIndexContainingFile(imageLayers, pathInImage);
 
             if (layerContaningFileIndex >= 0)
             {
-                int numberOfImagesUsingLayer = GetNamedImagesUsingLayer(imageLayers[layerContaningFileIndex]).Count;
+                int numberOfImagesUsingLayer = GetNamedImagesUsingLayer(imageLayers[layerContaningFileIndex], platform).Count;
                 if (numberOfImagesUsingLayer == 1)
                 {
                     return layerContaningFileIndex;
@@ -183,7 +186,7 @@ namespace ContainerdLibrary
             }
 
             BlobReference topLayerReference = imageLayers[imageLayers.Count - 1];
-            if (GetNamedImagesUsingLayer(topLayerReference).Count == 1)
+            if (GetNamedImagesUsingLayer(topLayerReference, platform).Count == 1)
             {
                 return imageLayers.Count - 1;
             }
