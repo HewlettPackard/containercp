@@ -201,7 +201,5 @@ namespace containercp
             long size = VarIntConverter.ToInt64(sizeBytes);
             return new BlobReference(digest, size, dockerMediaType);
         }
-
-        
     }
 }
