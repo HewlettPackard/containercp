@@ -103,7 +103,7 @@ namespace containercp
             ContainerDetails destinationContainerDetails = destinationContainerDetailsList[0];
 
             List<BlobReference> imageLayers = containerdDatastore.GetImageLayers(destinationContainerDetails.ImageIdentifier, PlatformHelper.CurrentPlatform);
-            int layerIndex = containerdDatastore.FindImageLayerIndexContainingFile(imageLayers, pathInDestinationContainer);
+            int layerIndex = containerdDatastore.FindImageLayerIndexContainingFile(imageLayers, pathInDestinationContainer, out FileMetadata fileMetadata);
             if (layerIndex >= 0)
             {
                 List<string> imagesUsingLayer = containerdDatastore.GetNamedImagesUsingLayer(imageLayers[layerIndex], PlatformHelper.CurrentPlatform);
@@ -142,7 +142,7 @@ namespace containercp
             {
                 try
                 {
-                    containerdDatastore.PutFileInImageLayer(imageLayers[layerIndex], pathInDestinationContainer, sourceFileStream, true);
+                    containerdDatastore.PutFileInImageLayer(imageLayers[layerIndex], pathInDestinationContainer, sourceFileStream, true, fileMetadata);
                 }
                 catch (UnauthorizedAccessException)
                 {

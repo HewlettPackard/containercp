@@ -96,16 +96,16 @@ namespace ContainerdLibrary
             return m_databaseHelper.GetAllImages();
         }
 
-        public bool IsFileExistsInLayer(BlobReference reference, string pathInContainer)
+        public bool IsFileExistsInLayer(BlobReference reference, string pathInContainer, out FileMetadata fileMetadata)
         {
             string blobPath = GetBlobPath(reference);
             if (reference.DockerMediaType == DockerMediaType.ImageTarGzip)
             {
-                return TarHelper.IsFileExistsInTarGzip(blobPath, pathInContainer);
+                return TarHelper.IsFileExistsInTarGzip(blobPath, pathInContainer, out fileMetadata);
             }
             else
             {
-                return TarHelper.IsFileExistsInTar(blobPath, pathInContainer);
+                return TarHelper.IsFileExistsInTar(blobPath, pathInContainer, out fileMetadata);
             }
         }
 
@@ -160,15 +160,21 @@ namespace ContainerdLibrary
 
         public int FindImageLayerIndexContainingFile(List<BlobReference> imageLayers, string pathInImage)
         {
+            return FindImageLayerIndexContainingFile(imageLayers, pathInImage, out _);
+        }
+
+        public int FindImageLayerIndexContainingFile(List<BlobReference> imageLayers, string pathInImage, out FileMetadata fileMetadata)
+        {
             for (int index = imageLayers.Count - 1; index >= 0; index--)
             {
                 BlobReference layerReference = imageLayers[index];
-                if (IsFileExistsInLayer(layerReference, pathInImage))
+                if (IsFileExistsInLayer(layerReference, pathInImage, out fileMetadata))
                 {
                     return index;
                 }
             }
 
+            fileMetadata = null;
             return -1;
         }
 
@@ -227,18 +233,18 @@ namespace ContainerdLibrary
             }
         }
 
-        public BlobReference PutFileInImageLayer(BlobReference layerReference, string pathInImage, FileStream fileStream, bool overwrite)
+        public BlobReference PutFileInImageLayer(BlobReference layerReference, string pathInImage, FileStream fileStream, bool overwrite, FileMetadata fileMetadata = null)
         {
             string layerFilePath = GetBlobPath(layerReference);
             // We put the file in the blob directory and not in /tmp to avoid copy time (in case /tmp is mapped to a different partition)
             string tempOutputPath = Path.Combine(DefaultContainerdDirectoryPath, BlobsRelativePath, "TempFile");
             if (layerReference.DockerMediaType == DockerMediaType.ImageTarGzip)
             {
-                TarHelper.PutFileInTarGzipArchive(layerFilePath, pathInImage, fileStream, tempOutputPath);
+                TarHelper.PutFileInTarGzipArchive(layerFilePath, pathInImage, fileStream, tempOutputPath, fileMetadata);
             }
             else
             {
-                TarHelper.PutFileInTarArchive(layerFilePath, pathInImage, fileStream, tempOutputPath);
+                TarHelper.PutFileInTarArchive(layerFilePath, pathInImage, fileStream, tempOutputPath, fileMetadata);
             }
 
             if (overwrite)

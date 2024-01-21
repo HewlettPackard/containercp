@@ -1,4 +1,4 @@
-﻿/* Copyright 2023 Hewlett Packard Enterprise Development LP.
+﻿/* Copyright 2023-2024 Hewlett Packard Enterprise Development LP.
  * 
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License version 2.1
@@ -19,10 +19,13 @@ namespace ContainerdLibrary.Tests
             string pathInArchive = "/var/lib/dpkg/diversions";
 
             // Act
-            bool isFileExists = TarHelper.IsFileExistsInTarGzip(archivePath, pathInArchive);
+            bool isFileExists = TarHelper.IsFileExistsInTarGzip(archivePath, pathInArchive, out FileMetadata fileMetadata);
 
             // Assert
             Assert.IsTrue(isFileExists);
+            Assert.AreEqual(0, fileMetadata.UserID);
+            Assert.AreEqual(0, fileMetadata.GroupID);
+            Assert.AreEqual(33188, fileMetadata.Mode);
         }
     }
 }
