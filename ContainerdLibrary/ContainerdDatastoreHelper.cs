@@ -149,7 +149,7 @@ namespace ContainerdLibrary
             List<string> result = new List<string>();
             foreach(string image in images)
             {
-                if (!image.StartsWith($"{Sha256HashType}:"))
+                if (!image.StartsWith($"{Sha256HashType}:") && !image.Contains($"@{Sha256HashType}:"))
                 {
                     result.Add(image);
                 }
