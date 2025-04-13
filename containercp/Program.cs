@@ -19,6 +19,7 @@ namespace containercp
                 Console.WriteLine("containercp <container-name>:<path-in-container> <path>");
                 Console.WriteLine("containercp <path> <container-name>:<path-in-container>");
                 Console.WriteLine("containercp <container-name>");
+                Console.WriteLine("containercp -image-info <image-identifier>");
                 Console.WriteLine("containercp -list containers");
                 Console.WriteLine("containercp -list images");
                 return;
@@ -31,7 +32,12 @@ namespace containercp
             }
             else if (args.Length == 2)
             {
-                if (args[0] == "-list")
+                if (args[0] == "-image-info")
+                {
+                    string imageIdentifier = args[1];
+                    InfoManager.ShowImageInfo(imageIdentifier);
+                }
+                else if (args[0] == "-list")
                 {
                     switch (args[1])
                     {

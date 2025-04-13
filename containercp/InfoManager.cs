@@ -63,8 +63,8 @@ namespace containercp
                 for (int index = 0; index < layerReferences.Count; index++)
                 {
                     BlobReference layerReference = layerReferences[index];
-                    string snapshotName = layerSnapshotNames[index];
                     Console.WriteLine($"Layer {index}: {layerReference.Hash}, size: {layerReference.Size}");
+                    string snapshotName = layerSnapshotNames[index];
                     ulong? snapshotID = datastoreHelper.GetSnapshotID(snapshotName);
                     Console.WriteLine($"  Snapshot ID: {snapshotID}");
                     Console.WriteLine($"  Snapshot Name: {snapshotName}");
@@ -78,6 +78,41 @@ namespace containercp
                         Console.WriteLine($"  Container using this layer: {containerUsingLayer.ContainerName}");
                     }
                 }
+            }
+        }
+
+        public static void ShowImageInfo(string imageIdentifier)
+        {
+            ContainerdDatastoreHelper datastoreHelper = new ContainerdDatastoreHelper();
+            if (!datastoreHelper.IsDatabaseExists())
+            {
+                Console.WriteLine("Error: containerd database was not found");
+                return;
+            }
+            BlobReference manifestReference = datastoreHelper.GetImageManifestReference(imageIdentifier);
+            if (manifestReference == null)
+            {
+                Console.WriteLine($"Image {imageIdentifier} was not found");
+                return;
+            }
+
+            Console.WriteLine($"Image manifest reference: {manifestReference.Hash}");
+            List<string> diffIDs = datastoreHelper.GetImageDiffIDs(imageIdentifier, PlatformHelper.CurrentPlatform);
+            List<BlobReference> layerReferences = datastoreHelper.GetImageLayers(imageIdentifier, PlatformHelper.CurrentPlatform);
+            if (diffIDs.Count != layerReferences.Count)
+            {
+                Console.WriteLine("Error: DiffIDs count does not match layer count");
+                return;
+            }
+
+            List<string> chainIDs = datastoreHelper.GetImageChainIDs(imageIdentifier, PlatformHelper.CurrentPlatform);
+            for (int index = 0; index < layerReferences.Count; index++)
+            {
+                BlobReference layerReference = layerReferences[index];
+                Console.WriteLine($"Layer {index}: {layerReference.Hash}, size: {layerReference.Size}");
+
+                Console.WriteLine($" DiffID: {diffIDs[index]}");
+                Console.WriteLine($" ChainID: {chainIDs[index]}");
             }
         }
     }
