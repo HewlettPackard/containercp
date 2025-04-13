@@ -26,5 +26,23 @@ namespace ContainerdLibrary.Tests
             // Assert
             Assert.AreEqual(19, layers.Count);
         }
+
+        [TestMethod]
+        [DeploymentItem(@"TestData\io.containerd.content.v1.content\blobs\sha256\7d257bb9ceb6e3f6b16e1c37b01459b5964a1b3a715a7065507178c17b7e3d38", @"TestData\io.containerd.content.v1.content\blobs\sha256\7d257bb9ceb6e3f6b16e1c37b01459b5964a1b3a715a7065507178c17b7e3d38")]
+        public void Test_GetImageConfigBlobReference()
+        {
+            // Arrange
+            string manifestPath = @"TestData\io.containerd.content.v1.content\blobs\sha256\7d257bb9ceb6e3f6b16e1c37b01459b5964a1b3a715a7065507178c17b7e3d38";
+            string manifest = File.ReadAllText(manifestPath);
+
+            // Act
+            BlobReference configBlobReference = ImageManifestParser.GetImageConfigBlobReference(manifest);
+
+            // Assert
+            Assert.AreEqual(DockerMediaType.ImageConfigV1Json, configBlobReference.DockerMediaType);
+            Assert.AreEqual(6243, configBlobReference.Size);
+            Assert.AreEqual("85b54b71a42fb89ae671a1d77faf69a61d6046647c328c610059cd158fa48408", configBlobReference.Hash);
+            Assert.AreEqual("sha256", configBlobReference.HashType);
+        }
     }
 }
