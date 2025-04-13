@@ -19,6 +19,9 @@
     <None Update="TestData\io.containerd.content.v1.content\blobs\sha256\017727efcfeb7d053af68e51436ce8e65edbc6ca573720afb4f79c8594036955">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="TestData\io.containerd.content.v1.content\blobs\sha256\7c2d729072a7ad556cb0ac2f53bfb5b1ab6dd511d1b48be9f009c9166bde6ee3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\io.containerd.content.v1.content\blobs\sha256\bea1513c492de5b5e94bf8949d2cc55b3eaa9775467c0f243f8f8e68a6496e71">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
