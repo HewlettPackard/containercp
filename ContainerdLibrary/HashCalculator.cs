@@ -11,11 +11,19 @@ namespace ContainerdLibrary
 {
     internal static class HashCalculator
     {
+        public static string CalculateSha256HashString(byte[] bytes)
+        {
+            SHA256 sha256 = new SHA256Managed();
+            byte[] hash = sha256.ComputeHash(bytes);
+            return HexToString(hash);
+        }
+
         public static string CalculateSha256HashString(string filePath)
         {
             byte[] hashBytes = CalculateSha256Hash(filePath);
             return HexToString(hashBytes);
         }
+
         public static byte[] CalculateSha256Hash(string filePath)
         {
             SHA256 sha256 = new SHA256Managed();
