@@ -17,6 +17,10 @@ namespace ContainerdLibrary
 
         private const string OciManifestListV1MediaType = "application/vnd.oci.image.index.v1+json"; // Identical in format to ManifestListV2MediaType
 
+        private const string DockerImageConfigV1MediaType = "application/vnd.docker.container.image.v1+json";
+
+        private const string OciImageConfigV1MediaType = "application/vnd.oci.image.config.v1+json";
+
         private const string DockerTarGzipLayerMediaType = "application/vnd.docker.image.rootfs.diff.tar.gzip";
 
         private const string DockerTarLayerMediaType = "application/vnd.docker.image.rootfs.diff.tar";
@@ -37,6 +41,18 @@ namespace ContainerdLibrary
                     return DockerMediaType.ManifestListV2Json;
                 default:
                     throw new NotSupportedException($"{mediaType} manifest media type is not supported");
+            }
+        }
+
+        public static DockerMediaType ParseImageConfigMediaType(string mediaType)
+        {
+            switch (mediaType)
+            {
+                case DockerImageConfigV1MediaType:
+                case OciImageConfigV1MediaType:
+                    return DockerMediaType.ImageConfigV1Json;
+                default:
+                    throw new NotSupportedException($"{mediaType} image config media type is not supported");
             }
         }
 

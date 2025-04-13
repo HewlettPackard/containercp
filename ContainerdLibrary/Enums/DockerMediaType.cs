@@ -9,6 +9,7 @@ namespace ContainerdLibrary
     {
         ManifestV2Json,
         ManifestListV2Json,
+        ImageConfigV1Json,
         ImageTarGzip,
         ImageTar,
     }
