@@ -7,6 +7,7 @@ using containercp;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace ContainerdLibrary
 {
@@ -74,6 +75,34 @@ namespace ContainerdLibrary
         {
             string imageManifest = GetImageManifest(imageIdentifier, platform);
             return ImageManifestParser.GetImageLayers(imageManifest);
+        }
+
+        public List<string> GetImageDiffIDs(string imageIdentifier, DockerPlatform platform)
+        {
+            string imageManifest = GetImageManifest(imageIdentifier, platform);
+            BlobReference configReference = ImageManifestParser.GetImageConfigBlobReference(imageManifest);
+            string configPath = GetBlobPath(configReference);
+            string configText = File.ReadAllText(configPath);
+            return ImageConfigParser.GetImageDiffIDs(configText);
+        }
+
+        public List<string> GetImageChainIDs(string imageIdentifier, DockerPlatform platform)
+        {
+            List<string> diffIDs = GetImageDiffIDs(imageIdentifier, platform);
+            List<string> result = new List<string>(diffIDs.Count);
+            if (diffIDs.Count > 0)
+            {
+                result.Add(diffIDs[0]);
+            }
+
+            for (int index = 1; index < diffIDs.Count; index++)
+            {
+                string previousChainID = result[index - 1];
+                string chainID = CalculateImageChainID(previousChainID, diffIDs[index]);
+                result.Add(chainID);
+            }
+
+            return result;
         }
 
         public string GetSnapshotName(string snapshotKey)
@@ -262,6 +291,12 @@ namespace ContainerdLibrary
 
                 return new BlobReference(Sha256HashType, hash, blobSize, layerReference.DockerMediaType);
             }
+        }
+
+        internal static string CalculateImageChainID(string previousChainID, string diffID)
+        {
+            string stringToHash = previousChainID + " " + diffID;
+            return "sha256:" + HashCalculator.CalculateSha256HashString(Encoding.ASCII.GetBytes(stringToHash));
         }
     }
 }
