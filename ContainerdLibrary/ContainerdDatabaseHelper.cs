@@ -3,6 +3,7 @@
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License version 2.1
  */
+using System;
 using BoltDB;
 using ContainerdLibrary;
 using System.Collections.Generic;
@@ -104,7 +105,10 @@ namespace containercp
                 string imageIdentifier = imageBucket.Key;
                 BlobReference manifestReference = GetImageManifestBlobReference(imageBucket.Value);
                 
-                result.Add(new KeyValuePair<string, BlobReference>(imageIdentifier, manifestReference));
+                if (manifestReference != null)
+                {
+                    result.Add(new KeyValuePair<string, BlobReference>(imageIdentifier, manifestReference));
+                }
             }
             return result;
         }
@@ -194,12 +198,20 @@ namespace containercp
                 throw new InvalidDataException("target bucket is missing");
             }
 
-            string mediaType = targetBucket.GetStringValueByKey("mediatype");
-            DockerMediaType dockerMediaType = DockerMediaTypeParser.ParseManifestMediaType(mediaType);
-            string digest = targetBucket.GetStringValueByKey("digest");
-            byte[] sizeBytes = (byte[])targetBucket.GetElementValueByKey("size");
-            long size = VarIntConverter.ToInt64(sizeBytes);
-            return new BlobReference(digest, size, dockerMediaType);
+            try
+            {
+                string mediaType = targetBucket.GetStringValueByKey("mediatype");
+                DockerMediaType dockerMediaType = DockerMediaTypeParser.ParseManifestMediaType(mediaType);
+                string digest = targetBucket.GetStringValueByKey("digest");
+                byte[] sizeBytes = (byte[])targetBucket.GetElementValueByKey("size");
+                long size = VarIntConverter.ToInt64(sizeBytes);
+                return new BlobReference(digest, size, dockerMediaType);
+            }
+            catch (NotSupportedException ex)
+            {
+                Console.WriteLine($"Warning: Skipping image with unsupported media type: {ex.Message}");
+                return null;
+            }
         }
     }
 }
