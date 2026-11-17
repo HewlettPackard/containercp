@@ -6,6 +6,7 @@
     <Version>0.8.1</Version>
     <DebugType>embedded</DebugType>
     <EmbedAllSources>true</EmbedAllSources>
+    <InvariantGlobalization>true</InvariantGlobalization>
     <Authors>Hewlett Packard Enterprise Development LP</Authors>
     <Copyright>Hewlett Packard Enterprise Development LP</Copyright>
   </PropertyGroup>
