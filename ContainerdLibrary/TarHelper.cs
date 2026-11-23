@@ -1,4 +1,4 @@
-﻿/* Copyright 2023 Hewlett Packard Enterprise Development LP.
+﻿/* Copyright 2023-2026 Hewlett Packard Enterprise Development LP.
  * 
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License version 2.1
@@ -6,6 +6,7 @@
 using ICSharpCode.SharpZipLib.GZip;
 using ICSharpCode.SharpZipLib.Tar;
 using System.IO;
+using System.IO.Compression;
 using System.Text;
 using Utilities;
 
@@ -19,6 +20,18 @@ namespace ContainerdLibrary
             using (archiveStream)
             {
                 using (GZipInputStream gZipStream = new GZipInputStream(archiveStream))
+                {
+                    return IsFileExistsInTarStream(gZipStream, pathInArchive, out fileMetadata);
+                }
+            }
+        }
+
+        public static bool IsFileExistsInTarZstd(string archivePath, string pathInArchive, out FileMetadata fileMetadata)
+        {
+            FileStream archiveStream = File.OpenRead(archivePath);
+            using (archiveStream)
+            {
+                using (ZstandardStream gZipStream = new ZstandardStream(archiveStream, CompressionMode.Decompress))
                 {
                     return IsFileExistsInTarStream(gZipStream, pathInArchive, out fileMetadata);
                 }
@@ -65,6 +78,18 @@ namespace ContainerdLibrary
             using (archiveStream)
             {
                 using (GZipInputStream gZipStream = new GZipInputStream(archiveStream))
+                {
+                    return ExtractFileFromTarStream(gZipStream, pathInArchive, outputPath);
+                }
+            }
+        }
+
+        public static bool ExtractFileFromTarZstd(string archivePath, string pathInArchive, string outputPath)
+        {
+            FileStream archiveStream = File.OpenRead(archivePath);
+            using (archiveStream)
+            {
+                using (ZstandardStream gZipStream = new ZstandardStream(archiveStream, CompressionMode.Decompress))
                 {
                     return ExtractFileFromTarStream(gZipStream, pathInArchive, outputPath);
                 }
@@ -124,6 +149,25 @@ namespace ContainerdLibrary
                         using (GZipOutputStream gZipOutputStream = new GZipOutputStream(destinationArchiveStream))
                         {
                             PutFileInTarArchive(gZipStream, pathInArchive, fileStream, gZipOutputStream, fileMetadata);
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void PutFileInTarZstdArchive(string archivePath, string pathInArchive, Stream fileStream, string outputPath, FileMetadata fileMetadata = null)
+        {
+            FileStream sourceArchiveStream = File.OpenRead(archivePath);
+            FileStream destinationArchiveStream = File.OpenWrite(outputPath);
+            using (sourceArchiveStream)
+            {
+                using (destinationArchiveStream)
+                {
+                    using (ZstandardStream zstdStream = new ZstandardStream(sourceArchiveStream, CompressionMode.Decompress))
+                    {
+                        using (ZstandardStream zstdOutputStream = new ZstandardStream(destinationArchiveStream, CompressionMode.Compress))
+                        {
+                            PutFileInTarArchive(zstdStream, pathInArchive, fileStream, zstdOutputStream, fileMetadata);
                         }
                     }
                 }

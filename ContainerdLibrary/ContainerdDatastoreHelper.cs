@@ -1,4 +1,4 @@
-﻿/* Copyright 2023 Hewlett Packard Enterprise Development LP.
+﻿/* Copyright 2023-2026 Hewlett Packard Enterprise Development LP.
  * 
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License version 2.1
@@ -132,6 +132,10 @@ namespace ContainerdLibrary
             {
                 return TarHelper.IsFileExistsInTarGzip(blobPath, pathInContainer, out fileMetadata);
             }
+            if (reference.DockerMediaType == DockerMediaType.ImageTarZstd)
+            {
+                return TarHelper.IsFileExistsInTarZstd(blobPath, pathInContainer, out fileMetadata);
+            }
             else
             {
                 return TarHelper.IsFileExistsInTar(blobPath, pathInContainer, out fileMetadata);
@@ -256,6 +260,10 @@ namespace ContainerdLibrary
             {
                 TarHelper.ExtractFileFromTarGzip(layerFilePath, pathInImage, outputPath);
             }
+            else if (layerReference.DockerMediaType == DockerMediaType.ImageTarZstd)
+            {
+                TarHelper.ExtractFileFromTarZstd(layerFilePath, pathInImage, outputPath);
+            }
             else
             {
                 TarHelper.ExtractFileFromTar(layerFilePath, pathInImage, outputPath);
@@ -270,6 +278,10 @@ namespace ContainerdLibrary
             if (layerReference.DockerMediaType == DockerMediaType.ImageTarGzip)
             {
                 TarHelper.PutFileInTarGzipArchive(layerFilePath, pathInImage, fileStream, tempOutputPath, fileMetadata);
+            }
+            else if (layerReference.DockerMediaType == DockerMediaType.ImageTarZstd)
+            {
+                TarHelper.PutFileInTarZstdArchive(layerFilePath, pathInImage, fileStream, tempOutputPath, fileMetadata);
             }
             else
             {

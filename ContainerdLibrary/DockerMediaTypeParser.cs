@@ -1,4 +1,4 @@
-﻿/* Copyright 2023-2024 Hewlett Packard Enterprise Development LP.
+﻿/* Copyright 2023-2026 Hewlett Packard Enterprise Development LP.
  * 
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License version 2.1
@@ -26,6 +26,8 @@ namespace ContainerdLibrary
         private const string DockerTarLayerMediaType = "application/vnd.docker.image.rootfs.diff.tar";
 
         private const string OciTarGzipLayerMediaType = "application/vnd.oci.image.layer.v1.tar+gzip";
+
+        private const string OciTarZstdLayerMediaType = "application/vnd.oci.image.layer.v1.tar+zstd";
 
         private const string OciTarLayerMediaType = "application/vnd.oci.image.layer.v1.tar";
 
@@ -66,6 +68,8 @@ namespace ContainerdLibrary
                 case DockerTarLayerMediaType:
                 case OciTarLayerMediaType:
                     return DockerMediaType.ImageTar;
+                case OciTarZstdLayerMediaType:
+                    return DockerMediaType.ImageTarZstd;
                 default:
                     throw new NotSupportedException($"{mediaType} image media type is not supported");
             }

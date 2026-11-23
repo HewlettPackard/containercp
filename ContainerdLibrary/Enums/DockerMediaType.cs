@@ -1,4 +1,4 @@
-﻿/* Copyright 2023 Hewlett Packard Enterprise Development LP.
+﻿/* Copyright 2023-2026 Hewlett Packard Enterprise Development LP.
  * 
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License version 2.1
@@ -11,6 +11,7 @@ namespace ContainerdLibrary
         ManifestListV2Json,
         ImageConfigV1Json,
         ImageTarGzip,
+        ImageTarZstd,
         ImageTar,
     }
 }
