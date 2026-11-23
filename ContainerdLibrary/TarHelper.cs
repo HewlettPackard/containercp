@@ -3,7 +3,6 @@
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License version 2.1
  */
-using ICSharpCode.SharpZipLib.GZip;
 using ICSharpCode.SharpZipLib.Tar;
 using System.IO;
 using System.IO.Compression;
@@ -19,7 +18,7 @@ namespace ContainerdLibrary
             FileStream archiveStream = File.OpenRead(archivePath);
             using (archiveStream)
             {
-                using (GZipInputStream gZipStream = new GZipInputStream(archiveStream))
+                using (GZipStream gZipStream = new GZipStream(archiveStream, CompressionMode.Decompress))
                 {
                     return IsFileExistsInTarStream(gZipStream, pathInArchive, out fileMetadata);
                 }
@@ -77,7 +76,7 @@ namespace ContainerdLibrary
             FileStream archiveStream = File.OpenRead(archivePath);
             using (archiveStream)
             {
-                using (GZipInputStream gZipStream = new GZipInputStream(archiveStream))
+                using (GZipStream gZipStream = new GZipStream(archiveStream, CompressionMode.Decompress))
                 {
                     return ExtractFileFromTarStream(gZipStream, pathInArchive, outputPath);
                 }
@@ -144,9 +143,9 @@ namespace ContainerdLibrary
             {
                 using (destinationArchiveStream)
                 {
-                    using (GZipInputStream gZipStream = new GZipInputStream(sourceArchiveStream))
+                    using (GZipStream gZipStream = new GZipStream(sourceArchiveStream, CompressionMode.Decompress))
                     {
-                        using (GZipOutputStream gZipOutputStream = new GZipOutputStream(destinationArchiveStream))
+                        using (GZipStream gZipOutputStream = new GZipStream(destinationArchiveStream, CompressionMode.Compress))
                         {
                             PutFileInTarArchive(gZipStream, pathInArchive, fileStream, gZipOutputStream, fileMetadata);
                         }
