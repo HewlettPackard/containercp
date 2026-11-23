@@ -1,4 +1,4 @@
-﻿/* Copyright 2023 Hewlett Packard Enterprise Development LP.
+﻿/* Copyright 2023-2026 Hewlett Packard Enterprise Development LP.
  * 
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License version 2.1
@@ -13,7 +13,7 @@ namespace ContainerdLibrary
     {
         public static string CalculateSha256HashString(byte[] bytes)
         {
-            SHA256 sha256 = new SHA256Managed();
+            SHA256 sha256 = SHA256.Create();
             byte[] hash = sha256.ComputeHash(bytes);
             return HexToString(hash);
         }
@@ -26,7 +26,7 @@ namespace ContainerdLibrary
 
         public static byte[] CalculateSha256Hash(string filePath)
         {
-            SHA256 sha256 = new SHA256Managed();
+            SHA256 sha256 = SHA256.Create();
             FileStream fileStream = File.OpenRead(filePath);
             using (fileStream)
             {
